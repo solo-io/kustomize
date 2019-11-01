@@ -22,21 +22,31 @@ import (
 	"sigs.k8s.io/kustomize/api/types"
 )
 
+type LoaderFactory interface {
+	LoadGenerator(ldr ifc.Loader, v ifc.Validator, res *resource.Resource) (resmap.Generator, error)
+	LoadTransformer(ldr ifc.Loader, v ifc.Validator, res *resource.Resource) (resmap.Transformer, error)
+}
+
 type Loader struct {
 	pc *types.PluginConfig
 	rf *resmap.Factory
+	lf LoaderFactory
+}
+
+func (l *Loader) LF() LoaderFactory {
+	return l.lf
 }
 
 func NewLoader(
-	pc *types.PluginConfig, rf *resmap.Factory) *Loader {
-	return &Loader{pc: pc, rf: rf}
+	pc *types.PluginConfig, rf *resmap.Factory, lf LoaderFactory) *Loader {
+	return &Loader{pc: pc, rf: rf, lf: lf}
 }
 
 func (l *Loader) LoadGenerators(
 	ldr ifc.Loader, v ifc.Validator, rm resmap.ResMap) ([]resmap.Generator, error) {
 	var result []resmap.Generator
 	for _, res := range rm.Resources() {
-		g, err := l.LoadGenerator(ldr, v, res)
+		g, err := l.lf.LoadGenerator(ldr, v, res)
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +55,29 @@ func (l *Loader) LoadGenerators(
 	return result, nil
 }
 
-func (l *Loader) LoadGenerator(
+func (l *Loader) LoadTransformers(
+	ldr ifc.Loader, v ifc.Validator, rm resmap.ResMap) ([]resmap.Transformer, error) {
+	var result []resmap.Transformer
+	for _, res := range rm.Resources() {
+		t, err := l.lf.LoadTransformer(ldr, v, res)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, t)
+	}
+	return result, nil
+}
+
+type ExternalPluginLoader struct {
+	pc *types.PluginConfig
+	rf *resmap.Factory
+}
+
+func NewExternalPluginLoader(pc *types.PluginConfig, rf *resmap.Factory) *ExternalPluginLoader {
+	return &ExternalPluginLoader{pc: pc, rf: rf}
+}
+
+func (l *ExternalPluginLoader) LoadGenerator(
 	ldr ifc.Loader, v ifc.Validator, res *resource.Resource) (resmap.Generator, error) {
 	c, err := l.loadAndConfigurePlugin(ldr, v, res)
 	if err != nil {
@@ -58,20 +90,7 @@ func (l *Loader) LoadGenerator(
 	return g, nil
 }
 
-func (l *Loader) LoadTransformers(
-	ldr ifc.Loader, v ifc.Validator, rm resmap.ResMap) ([]resmap.Transformer, error) {
-	var result []resmap.Transformer
-	for _, res := range rm.Resources() {
-		t, err := l.LoadTransformer(ldr, v, res)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, t)
-	}
-	return result, nil
-}
-
-func (l *Loader) LoadTransformer(
+func (l *ExternalPluginLoader) LoadTransformer(
 	ldr ifc.Loader, v ifc.Validator, res *resource.Resource) (resmap.Transformer, error) {
 	c, err := l.loadAndConfigurePlugin(ldr, v, res)
 	if err != nil {
@@ -96,7 +115,7 @@ func AbsolutePluginPath(pc *types.PluginConfig, id resid.ResId) string {
 		pc.DirectoryPath, relativePluginPath(id), id.Kind)
 }
 
-func (l *Loader) absolutePluginPath(id resid.ResId) string {
+func (l *ExternalPluginLoader) absolutePluginPath(id resid.ResId) string {
 	return AbsolutePluginPath(l.pc, id)
 }
 
@@ -106,7 +125,7 @@ func isBuiltinPlugin(res *resource.Resource) bool {
 		res.GetGvk().Version == config.BuiltinPluginApiVersion
 }
 
-func (l *Loader) loadAndConfigurePlugin(
+func (l *ExternalPluginLoader) loadAndConfigurePlugin(
 	ldr ifc.Loader, v ifc.Validator, res *resource.Resource) (c resmap.Configurable, err error) {
 	if isBuiltinPlugin(res) {
 		// Instead of looking for and loading a .so file, just
@@ -134,7 +153,7 @@ func (l *Loader) loadAndConfigurePlugin(
 	return c, nil
 }
 
-func (l *Loader) makeBuiltinPlugin(r resid.Gvk) (resmap.Configurable, error) {
+func (l *ExternalPluginLoader) makeBuiltinPlugin(r resid.Gvk) (resmap.Configurable, error) {
 	bpt := builtinhelpers.GetBuiltinPluginType(r.Kind)
 	if f, ok := builtinhelpers.GeneratorFactories[bpt]; ok {
 		return f(), nil
@@ -145,7 +164,7 @@ func (l *Loader) makeBuiltinPlugin(r resid.Gvk) (resmap.Configurable, error) {
 	return nil, errors.Errorf("unable to load builtin %s", r)
 }
 
-func (l *Loader) loadPlugin(resId resid.ResId) (resmap.Configurable, error) {
+func (l *ExternalPluginLoader) loadPlugin(resId resid.ResId) (resmap.Configurable, error) {
 	p, err := execplugin.NewExecPlugin(l.absolutePluginPath(resId))
 	if err == nil {
 		return p, nil
@@ -168,7 +187,7 @@ func (l *Loader) loadPlugin(resId resid.ResId) (resmap.Configurable, error) {
 // as a Loader instance variable.  So make it a package variable.
 var registry = make(map[string]resmap.Configurable)
 
-func (l *Loader) loadGoPlugin(id resid.ResId) (resmap.Configurable, error) {
+func (l *ExternalPluginLoader) loadGoPlugin(id resid.ResId) (resmap.Configurable, error) {
 	regId := relativePluginPath(id)
 	if c, ok := registry[regId]; ok {
 		return copyPlugin(c), nil

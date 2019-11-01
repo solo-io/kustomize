@@ -63,12 +63,13 @@ func (b *Kustomizer) Run(path string) (resmap.ResMap, error) {
 		return nil, err
 	}
 	defer ldr.Cleanup()
+	extPluginLoader := pLdr.NewExternalPluginLoader(b.options.PluginConfig, rf)
 	kt, err := target.NewKustTarget(
 		ldr,
 		validator.NewKustValidator(),
 		rf,
 		pf,
-		pLdr.NewLoader(b.options.PluginConfig, rf),
+		pLdr.NewLoader(b.options.PluginConfig, rf, extPluginLoader),
 	)
 	if err != nil {
 		return nil, err

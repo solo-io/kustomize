@@ -56,8 +56,8 @@ func TestLoader(t *testing.T) {
 		kunstruct.NewKunstructuredFactoryImpl()), nil)
 
 	ldr := loadertest.NewFakeLoader("/foo")
-
-	pLdr := NewLoader(config.ActivePluginConfig(), rmF)
+	extpldr := NewExternalPluginLoader(config.ActivePluginConfig(), rmF)
+	pLdr := NewLoader(config.ActivePluginConfig(), rmF, extpldr)
 	if pLdr == nil {
 		t.Fatal("expect non-nil loader")
 	}
