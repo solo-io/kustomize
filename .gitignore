@@ -21,3 +21,5 @@ kustomize
 # IDEs
 .idea
 .vscode
+
+vendor
