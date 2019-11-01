@@ -6,12 +6,11 @@
 
  * [示例](../../examples) - 各种使用流程和概念的详细演示。
 
- * [术语表](../glossary.md) - 用于消除术语歧义。
+ * [术语表](glossary.md) - 用于消除术语歧义。
 
- * [kustomization.yaml](kustomization.yaml) - 包含 
- [kustomization](../glossary.md#kustomization) 所有字段的示例文件。
+ * [Kustomize 字段](fields.md) - 介绍 [kustomization](../glossary.md#kustomization) 文件中各字段的含义。
 
- * [插件](../plugins.md) - 使用自定义的资源生成器和资源转换器来拓展 kustomize 功能。
+ * [插件](../plugins) - 使用自定义的资源生成器和资源转换器来拓展 kustomize 功能。
 
  * [工作流](workflows.md) - 使用定制及使用现成配置使用的一些步骤。
 
@@ -20,16 +19,21 @@
 
 ## 发行说明
 
- * [2.1](../v_2.1.0.md) - 日期待定，预计2019年5月下旬。
+ * [3.1](../v3.1.0.md) - 2019年7月下旬，扩展 patches 和改进的资源匹配。
 
- * [2.0](../v_2.0.0.md) - 2019年3月
+ * [3.0](../v3.0.0.md) - 2019年6月下旬，插件开发者发布。
+
+ * [2.1](../v2.1.0.md) - 2019年6月18日
+ 插件、有序资源等。
+
+ * [2.0](../v2.0.0.md) - 2019年3月
    可以在 [kubectl v1.14][kubectl] 中使用 kustomize [v2.0.3] 。
 
- * [1.0](../v_1.0.1.md) - 2018年5月
+ * [1.0](../v1.0.1.md) - 2018年5月
    于 [kubectl repository] 开发后的首发版本。
 
 
-## 政策
+## 行为守则
 
  * [版本控制](../versioningPolicy.md) - kustomize 代码及 kustomization 文件的版本控制策略。
 

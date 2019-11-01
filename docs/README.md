@@ -9,11 +9,10 @@ English | [简体中文](zh/README.md)
 
  * [Glossary](glossary.md) - the word of the day is [_root_](glossary.md#kustomization-root).
 
- * [kustomization.yaml](kustomization.yaml) - a
-   [kustomization](glossary.md#kustomization) file
-   with explanations of each field.
+ * [Kustomize Fields](fields.md) - explanations of the fields
+   in a  [kustomization](glossary.md#kustomization) file.
 
- * [Plugins](plugins.md) - extending kustomize with
+ * [Plugins](plugins) - extending kustomize with
    custom generators and transformers.
 
  * [Workflows](workflows.md) - steps one might take in
@@ -24,12 +23,31 @@ English | [简体中文](zh/README.md)
 
 ## Release notes
 
- * [2.1](v_2.1.0.md) - Date TBD, target late May 2019
+ * [kustomize/3.2.2](https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv3.2.2) - kustomize CLI
+   moved to depend on kustomize Go API [3.3.0](v3.3.0.md).
 
- * [2.0](v_2.0.0.md) - Mar 2019.
+ * [API 3.3.0](v3.3.0.md) - First release of the kustomize Go API
+   in a module excluding the `kustomize` CLI.  From here on,
+   the CLI and API will release independently.
+ 
+ * [kustomize/3.2.1](https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv3.2.1) - Patch release
+   of `kustomize` CLI in its own module,
+   depending on Go API release [3.2.0](v3.2.0.md).
+
+ * [3.2.0](v3.2.0.md) - TODO(jingfang)
+
+ * [3.1.1](v3.1.0.md) - TODO(jingfang)
+
+ * [3.1](v3.1.0.md) - Late July 2019. Extended patches and improved resource matching.
+
+ * [3.0](v3.0.0.md) - Late June 2019. Plugin developer release.
+
+ * [2.1](v2.1.0.md) - 18 June 2019.  Plugins, ordered resources, etc.
+
+ * [2.0](v2.0.0.md) - Mar 2019.
    kustomize [v2.0.3] is available in [kubectl v1.14][kubectl].
 
- * [1.0](v_1.0.1.md) - May 2018.  Initial release after development
+ * [1.0](v1.0.1.md) - May 2018.  Initial release after development
    in the [kubectl repository].
 
 

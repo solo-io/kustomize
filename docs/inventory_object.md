@@ -10,10 +10,12 @@ inventory:
 ```
 
 ### Motivation
-If present, `Kustomize build` will make an _inventory_ object,
-which  could be a ConfigMap, or an App(to be added),
- which can be consumed by a client such as those under development in
+
+If present, `kustomize build` will make an _inventory_ object,
+which  could be a ConfigMap, or an App (to be added),
+which can be consumed by a client such as those under development in
 [cli-experimental](https://github.com/kubernetes-sigs/cli-experimental).
+
 The client can recognize this object by name and use it to do a better job
 with actions like `apply`, `prune` and `delete`.
 
@@ -26,9 +28,9 @@ The _inventory_ ConfigMap contains two special annotations:
   The value of this annotation is the JSON blob
   for an Inventory object. The Inventory is a
   struct that contains following information
-  - all objects within this kusotmization target
+  - all objects within this kustomization target
   - all objects that reference within this kustomization target
-  
+
   Here is an example of an Inventory object
   ```json
   {
@@ -42,16 +44,16 @@ The _inventory_ ConfigMap contains two special annotations:
               "version":"v1",
               "kind":"Deployment",
               "name":"mysql",
-              "namespace":"default",
+              "namespace":"default"
             }
           ],
         "~G_v1_Service|default|mysql":null
       }
-    }  
+    }
   ```
 
 - kustomize.config.k8s.io/InventoryHash
-  The value of this annotation is a hash that is 
+  The value of this annotation is a hash that is
   computed from the list of items in the Inventory
 
 Basically, this inventory object acts a record of objects that are applied as a group.
@@ -148,7 +150,7 @@ metadata:
   annotations:
     kustomize.config.k8s.io/Inventory: '{"current":{"apps_v1_Deployment|default|mysql":null,"~G_v1_Secret|default|pass-dfg7h97cf6":[{"group":"apps","version":"v1","kind":"Deployment","name":"mysql","namespace":"default"}],"~G_v1_Service|default|mysql":null}}'
     kustomize.config.k8s.io/InventoryHash: 7mgt867b75
-  name: haha
+  name: root-cm
   namespace: default
 ```
 

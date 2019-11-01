@@ -4,7 +4,7 @@
 [stable chart]: https://github.com/helm/charts/tree/master/stable
 [Helm charts]: https://github.com/helm/charts
 [_minecraft_]: https://github.com/helm/charts/tree/master/stable/minecraft
-[plugin]: ../docs/plugins.md
+[plugin]: ../docs/plugins
 
 [Helm charts] aren't natively read by kustomize, but
 kustomize has a [plugin] system that allows one to
@@ -108,7 +108,7 @@ executable:
 
 <!-- @installPlugin @helmtest -->
 ```
-plugin=plugin/someteam.example.com/v1/ChartInflator
+plugin=plugin/someteam.example.com/v1/chartinflator/ChartInflator
 curl -s --create-dirs -o \
 "$DEMO_HOME/kustomize/$plugin" \
 "https://raw.githubusercontent.com/\
@@ -137,7 +137,8 @@ Expect something like:
 > │   └── plugin
 > │       └── someteam.example.com
 > │           └── v1
-> │               └── ChartInflator
+> │               └── chartinflator
+> │                  └── ChartInflator
 > └── prod
 >    └── kustomization.yaml
 > ```
@@ -149,8 +150,7 @@ correct environment and flags for plugins:
 ```
 function kustomizeIt {
   XDG_CONFIG_HOME=$DEMO_HOME \
-  kustomize build \
-    --enable_alpha_goplugins_accept_panic_risk \
+  kustomize build --enable_alpha_plugins \
     $DEMO_HOME/$1
 }
 ```
